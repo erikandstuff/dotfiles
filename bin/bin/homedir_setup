@@ -1,0 +1,31 @@
+#!/bin/zsh
+
+dotfile_path=${0:a:h}/../..
+
+folders=(
+   ~/.local/share/zsh
+   ~/.local/share/vim/undo
+   ~/.config
+)
+
+echo "making directories..."
+mkdir -p ${folders[@]}
+
+echo "stowing config files..."
+if $(command -v stow); then
+   cd $dotfile_path
+   stow -t ~ *
+else
+   # stow not found, get the important ones
+   cd ~
+   ln -sf $dotfile_path/zsh/.zshrc
+   ln -sf $dotfile_path/zsh/.zshenv 
+   ln -sf $dotfile_path/zsh/.dircolors
+   ln -sf $dotfile_path/vim/.vimrc
+   ln -sf $dotfile_path/vim/.vim
+   ln -sf $dotfile_path/tmux/.tmux.conf
+fi
+
+if [[ $(uname -s) == "Darwin" ]]; then
+   chflags -h hidden ~/bin
+fi
